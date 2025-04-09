@@ -7,7 +7,8 @@ body {
   height: 100vh;
 }
 
-#stream-container {
+/* Conteneur du lecteur Twitch */
+#twitch-embed {
   position: absolute;
   top: 0;
   left: 0;
@@ -16,7 +17,7 @@ body {
   z-index: 0;
 }
 
-/* Dock zones (coins de l'écran) */
+/* Zones de redock aux coins de l'écran */
 .redock-zone {
   position: absolute;
   width: 50px;
@@ -29,6 +30,7 @@ body {
 #dock-bl { bottom: 0; left: 0; }
 #dock-br { bottom: 0; right: 0; }
 
+/* Panneaux flottants (Chat, Actions, etc.) */
 .floating-panel {
   position: absolute;
   width: 250px;
@@ -70,7 +72,24 @@ body {
   font-size: 14px;
 }
 
-/* Position initiale */
+/* Position initiale des panneaux */
 #chat-panel { top: 10px; left: 10px; }
 #sub-panel { top: 10px; right: 10px; }
 #follower-panel { bottom: 10px; left: 10px; }
+
+/* Module de contrôle de volume flottant */
+.floating-module {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(31, 31, 31, 0.9);
+  padding: 10px;
+  border-radius: 8px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+}
+
+.floating-module label {
+  margin-right: 8px;
+}

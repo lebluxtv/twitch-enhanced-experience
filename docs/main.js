@@ -1,22 +1,39 @@
 // Initialisation du lecteur Twitch via l'API
 const player = new Twitch.Player("twitch-embed", {
-  channel: "dropeart",            // Remplace par le nom de ta chaîne
-  parent: ["lebluxtv.github.io"],   // Le domaine autorisé
-  controls: false,                   // Désactivation des overlays natifs autant que possible
- width: "100%",
+  channel: "touuclakos",           // Remplace par ta chaîne en live
+  parent: ["lebluxtv.github.io", "localhost"], // Ajouter localhost pour le dev
+  controls: false,
+  width: "100%",
   height: "100%"
 });
 
-// Module de contrôle du volume : utilisation du slider pour régler le volume
+// Module de contrôle du volume
 const volumeSlider = document.getElementById("volume-slider");
 volumeSlider.addEventListener("input", (e) => {
   player.setVolume(parseFloat(e.target.value));
 });
 
-// Gestion du drag & drop et du collapse pour les panneaux flottants
-const panels = document.querySelectorAll('.floating-panel');
+// Fonction pour contraindre la position afin que le panneau reste visible
+function clampPosition(panel, proposedX, proposedY) {
+  // Obtenir la largeur et la hauteur du panneau (en tenant compte du redimensionnement)
+  const rect = panel.getBoundingClientRect();
+  let x = proposedX;
+  let y = proposedY;
+  // Limite gauche et haut
+  if (x < 0) { x = 0; }
+  if (y < 0) { y = 0; }
+  // Limite droite et bas selon la fenêtre
+  if (x + rect.width > window.innerWidth) {
+    x = window.innerWidth - rect.width;
+  }
+  if (y + rect.height > window.innerHeight) {
+    y = window.innerHeight - rect.height;
+  }
+  return { x, y };
+}
 
-panels.forEach(panel => {
+// Fonction pour gérer le drag & drop et le collapse pour un panneau donné
+function makeDraggable(panel) {
   const header = panel.querySelector('.panel-header');
   const collapseBtn = panel.querySelector('.collapse-btn');
   const content = panel.querySelector('.panel-content');
@@ -25,75 +42,60 @@ panels.forEach(panel => {
   let offsetX = 0;
   let offsetY = 0;
 
-  // Début du drag
   header.addEventListener('mousedown', (e) => {
     isDragging = true;
+    // Calcul de l'offset par rapport à la position du panneau
     offsetX = e.clientX - panel.getBoundingClientRect().left;
     offsetY = e.clientY - panel.getBoundingClientRect().top;
     panel.style.zIndex = 1001;
   });
 
-  // Drag en mouvement
   document.addEventListener('mousemove', (e) => {
     if (isDragging) {
-      panel.style.left = (e.clientX - offsetX) + 'px';
-      panel.style.top = (e.clientY - offsetY) + 'px';
+      let proposedX = e.clientX - offsetX;
+      let proposedY = e.clientY - offsetY;
+      // Appliquer le clamp pour que le panneau reste dans la fenêtre
+      const { x, y } = clampPosition(panel, proposedX, proposedY);
+      panel.style.left = x + 'px';
+      panel.style.top  = y + 'px';
     }
   });
 
-  // Fin du drag et redock (si proche d'un coin)
   document.addEventListener('mouseup', () => {
     if (isDragging) {
       isDragging = false;
-      dockToCorner(panel);
+      // Après le drag, appliquer à nouveau le clamp
+      const currentX = parseInt(panel.style.left, 10) || 0;
+      const currentY = parseInt(panel.style.top, 10) || 0;
+      const { x, y } = clampPosition(panel, currentX, currentY);
+      panel.style.left = x + 'px';
+      panel.style.top  = y + 'px';
     }
   });
 
-  // Fonction de collapse/expand
+  // Gestion du collapse/expand
   collapseBtn.addEventListener('click', () => {
     const isCollapsed = content.style.display === 'none';
     content.style.display = isCollapsed ? 'block' : 'none';
     collapseBtn.textContent = isCollapsed ? '−' : '+';
   });
+}
+
+// Appliquer le drag & drop à tous les panneaux flottants
+const panels = document.querySelectorAll('.floating-panel');
+panels.forEach(panel => {
+  makeDraggable(panel);
 });
 
-// Fonction de redock : aligne le panneau s'il est proche d'un coin
-function dockToCorner(panel) {
-  const rect = panel.getBoundingClientRect();
-  const distance = 50;
-
-  if (rect.top < distance && rect.left < distance) {
-    panel.style.top = '10px';
-    panel.style.left = '10px';
-  } else if (rect.top < distance && window.innerWidth - rect.right < distance) {
-    panel.style.top = '10px';
-    panel.style.right = '10px';
-    panel.style.left = 'unset';
-  } else if (window.innerHeight - rect.bottom < distance && rect.left < distance) {
-    panel.style.bottom = '10px';
-    panel.style.left = '10px';
-    panel.style.top = 'unset';
-  } else if (window.innerHeight - rect.bottom < distance && window.innerWidth - rect.right < distance) {
-    panel.style.bottom = '10px';
-    panel.style.right = '10px';
-    panel.style.top = 'unset';
-    panel.style.left = 'unset';
-  }
-}
-
-// Repositionnement des panneaux en fonction de la hauteur du lecteur
+// Repositionnement global lors du redimensionnement de la fenêtre : 
+// Vérifie pour chaque panneau qu'il reste dans la zone visible.
 function repositionPanels() {
-  const playerContainer = document.getElementById("player-container");
-  const containerHeight = playerContainer.offsetHeight;
-
-  // Ajuste la position des panneaux qui doivent se placer en dessous du lecteur (marge de 10px)
-  const chatPanel = document.getElementById("chat-panel");
-  const subPanel = document.getElementById("sub-panel");
-
-  chatPanel.style.top = (playerContainer.offsetHeight + 10) + "px";
-  subPanel.style.top = (playerContainer.offsetHeight + 10) + "px";
+  panels.forEach(panel => {
+    const currentX = parseInt(panel.style.left, 10) || 0;
+    const currentY = parseInt(panel.style.top, 10) || 0;
+    const { x, y } = clampPosition(panel, currentX, currentY);
+    panel.style.left = x + 'px';
+    panel.style.top  = y + 'px';
+  });
 }
-
-// Repositionnement au chargement et au redimensionnement de la fenêtre
-window.addEventListener('load', repositionPanels);
 window.addEventListener('resize', repositionPanels);

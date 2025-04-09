@@ -44,8 +44,12 @@ html, body {
   resize: both;
   overflow: auto;
   user-select: none;
+  opacity: 0.25;
+  transition: opacity 0.3s ease;
 }
-
+.floating-panel:hover {
+  opacity: 1;
+}
 /* En-tête des panneaux pour le drag & drop et le collapse */
 .panel-header {
   display: flex;

@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  background: #111;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+.floating {
+  position: absolute;
+  background: #222;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 10px;
+  color: white;
+}
+
+.hidden {
+  display: none;
+}
+
+.draggable {
+  cursor: move;
+}
+
+.resizable {
+  resize: both;
+  overflow: auto;
+}
+
+#twitch-stream {
+  width: 70vw;
+  height: 39.375vw; /* pour garder le bon ratio Twitch */
+  top: 10px;
+  left: 10px;
+}
+
+#twitch-chat {
+  width: 300px;
+  height: 500px;
+  top: 50px;
+  right: 10px;
+}

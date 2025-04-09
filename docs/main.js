@@ -1,6 +1,6 @@
 // Initialisation du lecteur Twitch via l'API
 const player = new Twitch.Player("twitch-embed", {
-  channel: "touuclakos",           // Remplace par ta chaîne en live
+  channel: "dropeart",           // Remplace par ta chaîne en live
   parent: ["lebluxtv.github.io", "localhost"], // Ajouter localhost pour le dev
   controls: false,
   width: "100%",

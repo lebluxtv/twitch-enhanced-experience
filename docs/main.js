@@ -1,85 +1,45 @@
-// Rendre les panneaux flottants déplaçables + dockables
-const floatingPanels = document.querySelectorAll('.floating-panel');
+document.querySelectorAll('.floating-panel').forEach(panel => {
+  const header = panel.querySelector('.panel-header');
+  const collapseBtn = panel.querySelector('.collapse-btn');
+  const content = panel.querySelector('.panel-content');
 
-floatingPanels.forEach(panel => {
-  makeDraggable(panel);
-});
-
-const docks = {
-  'dock-tl': { top: '10px', left: '10px' },
-  'dock-tr': { top: '10px', right: '10px' },
-  'dock-bl': { bottom: '10px', left: '10px' },
-  'dock-br': { bottom: '10px', right: '10px' }
-};
-
-function makeDraggable(element) {
-  let offsetX, offsetY;
+  // Drag & move
   let isDragging = false;
+  let offsetX, offsetY;
 
-  element.addEventListener('mousedown', (e) => {
+  header.addEventListener('mousedown', (e) => {
     isDragging = true;
-    offsetX = e.clientX - element.offsetLeft;
-    offsetY = e.clientY - element.offsetTop;
-    element.style.zIndex = 1000;
-
-    // Convertir les positions absolues en styles inline (top/left)
-    element.style.top = element.offsetTop + 'px';
-    element.style.left = element.offsetLeft + 'px';
-    element.style.bottom = '';
-    element.style.right = '';
+    offsetX = e.clientX - panel.offsetLeft;
+    offsetY = e.clientY - panel.offsetTop;
+    panel.style.zIndex = 100;
   });
 
   document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-
-    const x = e.clientX - offsetX;
-    const y = e.clientY - offsetY;
-
-    const maxX = window.innerWidth - element.offsetWidth;
-    const maxY = window.innerHeight - element.offsetHeight;
-
-    element.style.left = Math.max(0, Math.min(x, maxX)) + 'px';
-    element.style.top = Math.max(0, Math.min(y, maxY)) + 'px';
-
-    // Highlight les zones de dock si on passe dessus
-    for (let dockId in docks) {
-      const zone = document.getElementById(dockId);
-      const rect = zone.getBoundingClientRect();
-      if (
-        e.clientX > rect.left &&
-        e.clientX < rect.right &&
-        e.clientY > rect.top &&
-        e.clientY < rect.bottom
-      ) {
-        zone.classList.add('active');
-      } else {
-        zone.classList.remove('active');
-      }
+    if (isDragging) {
+      panel.style.left = `${Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, e.clientX - offsetX))}px`;
+      panel.style.top = `${Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, e.clientY - offsetY))}px`;
     }
   });
 
-  document.addEventListener('mouseup', (e) => {
-    if (!isDragging) return;
-    isDragging = false;
-
-    for (let dockId in docks) {
-      const zone = document.getElementById(dockId);
-      const rect = zone.getBoundingClientRect();
-      if (
-        e.clientX > rect.left &&
-        e.clientX < rect.right &&
-        e.clientY > rect.top &&
-        e.clientY < rect.bottom
-      ) {
-        element.style.top = docks[dockId].top || '';
-        element.style.left = docks[dockId].left || '';
-        element.style.bottom = docks[dockId].bottom || '';
-        element.style.right = docks[dockId].right || '';
-        break;
-      }
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      panel.style.zIndex = 10;
     }
-
-    // Nettoyage visuel
-    document.querySelectorAll('.redock-zone').forEach(z => z.classList.remove('active'));
   });
-}
+
+  // Collapse / Expand
+  collapseBtn.addEventListener('click', () => {
+    panel.classList.toggle('collapsed');
+    collapseBtn.textContent = panel.classList.contains('collapsed') ? '+' : '−';
+  });
+});
+
+// (Facultatif) Empêche que les panneaux sortent de l’écran au resize
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.floating-panel').forEach(panel => {
+    const rect = panel.getBoundingClientRect();
+    if (rect.right > window.innerWidth) panel.style.left = `${window.innerWidth - panel.offsetWidth}px`;
+    if (rect.bottom > window.innerHeight) panel.style.top = `${window.innerHeight - panel.offsetHeight}px`;
+  });
+});

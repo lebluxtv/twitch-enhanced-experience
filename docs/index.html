@@ -4,12 +4,10 @@
     <meta charset="UTF-8" />
     <title>Twitch Enhanced Experience</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- ✅ chemins relatifs corrigés -->
-   <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div id="stream-container">
-      <!-- ✅ parent mis à github.io -->
       <iframe
         src="https://player.twitch.tv/?channel=touuclakos&parent=lebluxtv.github.io"
         height="100%"
@@ -18,16 +16,38 @@
         frameborder="0"
       ></iframe>
     </div>
-<!-- Dock zones (invisible aimants) -->
-<div id="dock-tl" class="redock-zone"></div>
-<div id="dock-tr" class="redock-zone"></div>
-<div id="dock-bl" class="redock-zone"></div>
-<div id="dock-br" class="redock-zone"></div>
-    <div id="chat-panel" class="floating-panel">Chat loading...</div>
-    <div id="sub-panel" class="floating-panel">Subscriber Actions</div>
-    <div id="follower-panel" class="floating-panel">Follower Actions</div>
 
-    <!-- ✅ chemin relatif corrigé -->
-   <script type="module" src="main.js"></script>
+    <!-- Zones de redock invisibles -->
+    <div id="dock-tl" class="redock-zone"></div>
+    <div id="dock-tr" class="redock-zone"></div>
+    <div id="dock-bl" class="redock-zone"></div>
+    <div id="dock-br" class="redock-zone"></div>
+
+    <!-- Panneaux flottants avec boutons collapse -->
+    <div id="chat-panel" class="floating-panel">
+      <div class="panel-header">
+        <span>Chat</span>
+        <button class="collapse-btn">−</button>
+      </div>
+      <div class="panel-content">Chat loading...</div>
+    </div>
+
+    <div id="sub-panel" class="floating-panel">
+      <div class="panel-header">
+        <span>Subscriber Actions</span>
+        <button class="collapse-btn">−</button>
+      </div>
+      <div class="panel-content">Actions réservées aux subs...</div>
+    </div>
+
+    <div id="follower-panel" class="floating-panel">
+      <div class="panel-header">
+        <span>Follower Actions</span>
+        <button class="collapse-btn">−</button>
+      </div>
+      <div class="panel-content">Actions réservées aux followers...</div>
+    </div>
+
+    <script type="module" src="main.js"></script>
   </body>
 </html>

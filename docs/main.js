@@ -1,6 +1,8 @@
+// main.js
+
 // Initialisation du lecteur Twitch via l'API
 const player = new Twitch.Player("twitch-embed", {
-  channel: "dropeart",  // Remplace par ta chaîne en live
+  channel: "touuclakos",  // Remplace par ta chaîne en live
   parent: ["lebluxtv.github.io", "localhost"],  // Ajuste selon ton environnement
   controls: false,
   width: "100%",
@@ -9,14 +11,15 @@ const player = new Twitch.Player("twitch-embed", {
 
 // Contrôle du volume via le slider
 const volumeSlider = document.getElementById("volume-slider");
-volumeSlider.addEventListener("input", e => {
+volumeSlider.addEventListener("input", (e) => {
   player.setVolume(parseFloat(e.target.value));
 });
 
-// Fonction pour contraindre la position afin que le panneau reste visible
+// Fonction pour contraindre la position pour que le panneau reste dans la fenêtre
 function clampPosition(panel, proposedX, proposedY) {
   const rect = panel.getBoundingClientRect();
-  let x = proposedX, y = proposedY;
+  let x = proposedX;
+  let y = proposedY;
   if (x < 0) x = 0;
   if (y < 0) y = 0;
   if (x + rect.width > window.innerWidth) {
@@ -28,29 +31,30 @@ function clampPosition(panel, proposedX, proposedY) {
   return { x, y };
 }
 
-// Fonction d'auto-docking selon le panel et le seuil de proximité avec le bas de la fenêtre
+// Fonction d'auto-docking pour aligner les panneaux en bas si ils se rapprochent du bord
 function autoDockPanel(panel) {
   const rect = panel.getBoundingClientRect();
-  const threshold = 50;
-  // Si le bas du panneau est proche du bas de la fenêtre
+  const threshold = 50; // seuil en pixels
+  // Si le bas du panneau est proche du bas de la fenêtre...
   if (window.innerHeight - rect.bottom < threshold) {
-    switch(panel.id) {
+    switch (panel.id) {
       case "volume-control":
         panel.style.left = "10px";
         panel.style.bottom = "10px";
         panel.style.top = "";
         break;
       case "follower-panel":
-        panel.style.left = "270px";
+        panel.style.left = "270px"; // 10 + 250 + 10
         panel.style.bottom = "10px";
         panel.style.top = "";
         break;
       case "sub-panel":
-        panel.style.left = "530px";
+        panel.style.left = "530px"; // 10 + 250 + 10 + 250 + 10
         panel.style.bottom = "10px";
         panel.style.top = "";
         break;
       case "chat-panel":
+        // En mode normal, on place le chat docké à droite, sauf s'il est en mode full-height.
         if (!chatExpanded) {
           panel.style.right = "10px";
           panel.style.bottom = "10px";
@@ -62,31 +66,36 @@ function autoDockPanel(panel) {
   }
 }
 
-// Fonction pour rendre un panneau déplaçable et gérant le collapse
+// Fonction pour rendre un panneau déplaçable et gérer le collapse/expand en conservant sa taille
 function makeDraggable(panel) {
   const header = panel.querySelector(".panel-header");
   const collapseBtn = panel.querySelector(".collapse-btn");
-  let isDragging = false, offsetX = 0, offsetY = 0;
+  const content = panel.querySelector(".panel-content");
 
-  header.addEventListener("mousedown", e => {
+  let isDragging = false;
+  let offsetX = 0, offsetY = 0;
+
+  header.addEventListener("mousedown", (e) => {
     isDragging = true;
     offsetX = e.clientX - panel.getBoundingClientRect().left;
     offsetY = e.clientY - panel.getBoundingClientRect().top;
     panel.style.zIndex = 1001;
   });
-  document.addEventListener("mousemove", e => {
+
+  document.addEventListener("mousemove", (e) => {
     if (isDragging) {
       let proposedX = e.clientX - offsetX;
       let proposedY = e.clientY - offsetY;
       const { x, y } = clampPosition(panel, proposedX, proposedY);
       panel.style.left = x + "px";
       panel.style.top = y + "px";
-      // Pour le panneau Chat en mode normal, on réinitialise les propriétés de docking horizontales
-      if(panel.id === "chat-panel" && !chatExpanded) {
+      // Pour le panneau chat en mode normal, réinitialise la propriété de docking horizontale
+      if (panel.id === "chat-panel" && !chatExpanded) {
         panel.style.right = "";
       }
     }
   });
+
   document.addEventListener("mouseup", () => {
     if (isDragging) {
       isDragging = false;
@@ -94,53 +103,68 @@ function makeDraggable(panel) {
     }
   });
 
-  // Gérer le collapse/expand simple (pour les panneaux autres que le chat full-height)
+  // Gestion du collapse/expand en conservant la taille actuelle
   collapseBtn.addEventListener("click", () => {
-    const content = panel.querySelector(".panel-content");
     const isCollapsed = content.style.display === "none";
-    content.style.display = isCollapsed ? "block" : "none";
-    collapseBtn.textContent = isCollapsed ? "−" : "+";
+    if (!isCollapsed) {
+      // Avant de cacher le contenu, sauvegarder la hauteur actuelle dans dataset
+      if (!panel.dataset.storedHeight) {
+        panel.dataset.storedHeight = panel.style.height || panel.offsetHeight + "px";
+      }
+      content.style.display = "none";
+      collapseBtn.textContent = "+";
+    } else {
+      content.style.display = "block";
+      // Restaurer la hauteur sauvegardée afin de conserver la taille agrandie
+      if (panel.dataset.storedHeight) {
+        panel.style.height = panel.dataset.storedHeight;
+        delete panel.dataset.storedHeight;
+      }
+      collapseBtn.textContent = "−";
+    }
   });
 }
 
-// Appliquer le comportement de drag & drop à tous les panneaux flottants
+// Appliquer le comportement de drag & drop et collapse à tous les panneaux flottants
 const panels = document.querySelectorAll(".floating-panel");
 panels.forEach(panel => {
   makeDraggable(panel);
 });
 
-// Variable d'état pour le mode full-height du chat
+// Variable d'état pour le mode full-height du panneau Chat
 let chatExpanded = false;
 
-// Gestion du bouton d'extension du chat
+// Gestion du bouton d'extension du panneau Chat
+// Assure-toi d'avoir un bouton avec l'ID "chat-expand-btn" dans l'en-tête du chat.
 const chatExpandBtn = document.getElementById("chat-expand-btn");
-chatExpandBtn.addEventListener("click", () => {
-  const chatPanel = document.getElementById("chat-panel");
-  const playerContainer = document.getElementById("player-container");
-  if (!chatExpanded) {
-    // Déployer le chat en full-height sur le côté droit
-    chatPanel.classList.add("chat-expanded");
-    chatExpandBtn.textContent = "↩";  // icône pour réduire
-    chatExpanded = true;
-    // Ajuster le conteneur Twitch pour laisser de la place (par ex., une marge droite égale à la largeur du chat)
-    playerContainer.style.marginRight = "250px";
-  } else {
-    // Rétablir le chat en mode docké normal
-    chatPanel.classList.remove("chat-expanded");
-    chatExpandBtn.textContent = "⤢";  // icône pour étendre
-    chatExpanded = false;
-    // Rétablir la position dockée du chat
-    chatPanel.style.position = "absolute";
-    chatPanel.style.top = "";
-    chatPanel.style.right = "10px";
-    chatPanel.style.bottom = "10px";
-    chatPanel.style.left = "";
-    chatPanel.style.height = "";
-    playerContainer.style.marginRight = "";
-  }
-});
+if (chatExpandBtn) {
+  chatExpandBtn.addEventListener("click", () => {
+    const chatPanel = document.getElementById("chat-panel");
+    const playerContainer = document.getElementById("player-container");
+    if (!chatExpanded) {
+      // Déployer le chat en full-height sur le côté droit
+      chatPanel.classList.add("chat-expanded");
+      chatExpandBtn.textContent = "↩";  // Icône pour réduire
+      chatExpanded = true;
+      // Ajuster le conteneur Twitch pour laisser de la place (marge droite égale à la largeur du chat)
+      playerContainer.style.marginRight = "250px";
+    } else {
+      // Rétablir le mode docké normal pour le chat
+      chatPanel.classList.remove("chat-expanded");
+      chatExpandBtn.textContent = "⤢";  // Icône pour étendre
+      chatExpanded = false;
+      chatPanel.style.position = "absolute";
+      chatPanel.style.top = "";
+      chatPanel.style.right = "10px";
+      chatPanel.style.bottom = "10px";
+      chatPanel.style.left = "";
+      chatPanel.style.height = "";
+      playerContainer.style.marginRight = "";
+    }
+  });
+}
 
-// Repositionner tous les panneaux si la fenêtre est redimensionnée (et les "clamp")
+// Fonction pour repositionner les panneaux lors du redimensionnement de la fenêtre
 function repositionPanels() {
   panels.forEach(panel => {
     const currentX = parseInt(panel.style.left, 10) || 0;

@@ -1,56 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Twitch Enhanced Experience</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <!-- Conteneur responsive pour le player -->
-    <div id="player-container">
-      <div id="twitch-embed"></div>
-    </div>
+/* main.js */
 
-    <!-- Zones de redock -->
-    <div id="dock-tl" class="redock-zone"></div>
-    <div id="dock-tr" class="redock-zone"></div>
-    <div id="dock-bl" class="redock-zone"></div>
-    <div id="dock-br" class="redock-zone"></div>
+// Initialisation du lecteur Twitch
+const player = new Twitch.Player("twitch-embed", {
+  channel: "touuclakos",
+  parent: ["lebluxtv.github.io"],
+  controls: false // Désactiver overlays natifs (si possible)
+});
 
-    <!-- Module de contrôle du volume -->
-    <div id="volume-control" class="floating-module">
-      <label for="volume-slider">Volume</label>
-      <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
-    </div>
+// Contrôle du volume via un slider externe
+const volumeSlider = document.getElementById("volume-slider");
+volumeSlider.addEventListener("input", (e) => {
+  player.setVolume(parseFloat(e.target.value));
+});
 
-    <!-- Panneaux flottants -->
-    <div id="chat-panel" class="floating-panel">
-      <div class="panel-header">
-        <span>Chat</span>
-        <button class="collapse-btn">−</button>
-      </div>
-      <div class="panel-content">Chat loading...</div>
-    </div>
+// Gestion basique du drag & drop et du collapse
+const panels = document.querySelectorAll('.floating-panel');
 
-    <div id="sub-panel" class="floating-panel">
-      <div class="panel-header">
-        <span>Subscriber Actions</span>
-        <button class="collapse-btn">−</button>
-      </div>
-      <div class="panel-content">Actions réservées aux subs...</div>
-    </div>
+panels.forEach(panel => {
+  const header = panel.querySelector('.panel-header');
+  const collapseBtn = panel.querySelector('.collapse-btn');
+  const content = panel.querySelector('.panel-content');
 
-    <div id="follower-panel" class="floating-panel">
-      <div class="panel-header">
-        <span>Follower Actions</span>
-        <button class="collapse-btn">−</button>
-      </div>
-      <div class="panel-content">Actions réservées aux followers...</div>
-    </div>
+  let isDragging = false;
+  let offsetX = 0;
+  let offsetY = 0;
 
-    <!-- Script du lecteur Twitch + Script principal -->
-    <script src="https://player.twitch.tv/js/embed/v1.js"></script>
-    <script type="module" src="main.js"></script>
-  </body>
-</html>
+  header.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - panel.getBoundingClientRect().left;
+    offsetY = e.clientY - panel.getBoundingClientRect().top;
+    panel.style.zIndex = 1001;
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      const x = e.clientX - offsetX;
+      const y = e.clientY - offsetY;
+      panel.style.left = `${x}px`;
+      panel.style.top = `${y}px`;
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      dockToCorner(panel);
+    }
+  });
+
+  collapseBtn.addEventListener('click', () => {
+    const isCollapsed = content.style.display === 'none';
+    content.style.display = isCollapsed ? 'block' : 'none';
+    collapseBtn.textContent = isCollapsed ? '−' : '+';
+  });
+});
+
+// Fonction de redock
+function dockToCorner(panel) {
+  const rect = panel.getBoundingClientRect();
+  const distance = 50;
+
+  if (rect.top < distance && rect.left < distance) {
+    panel.style.top = '10px';
+    panel.style.left = '10px';
+  } else if (rect.top < distance && window.innerWidth - rect.right < distance) {
+    panel.style.top = '10px';
+    panel.style.right = '10px';
+    panel.style.left = 'unset';
+  } else if (window.innerHeight - rect.bottom < distance && rect.left < distance) {
+    panel.style.bottom = '10px';
+    panel.style.left = '10px';
+    panel.style.top = 'unset';
+  } else if (window.innerHeight - rect.bottom < distance && window.innerWidth - rect.right < distance) {
+    panel.style.bottom = '10px';
+    panel.style.right = '10px';
+    panel.style.top = 'unset';
+    panel.style.left = 'unset';
+  }
+}

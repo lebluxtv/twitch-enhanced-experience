@@ -1,26 +1,22 @@
-// Ton pseudo Twitch
-const twitchChannel = 'lebluxtv';
+function makeDraggable(el) {
+  let offsetX = 0, offsetY = 0, isDown = false;
 
-// Stream Embed
-const streamDiv = document.getElementById('twitch-stream');
-streamDiv.innerHTML = `
-  <iframe
-    src="https://player.twitch.tv/?channel=${twitchChannel}&parent=${location.hostname}"
-    frameborder="0"
-    allowfullscreen="true"
-    scrolling="no"
-    height="100%"
-    width="100%">
-  </iframe>
-`;
+  el.addEventListener('mousedown', (e) => {
+    isDown = true;
+    offsetX = el.offsetLeft - e.clientX;
+    offsetY = el.offsetTop - e.clientY;
+    el.style.zIndex = 999; // on top
+  });
 
-// Chat Embed
-const chatDiv = document.getElementById('twitch-chat');
-chatDiv.innerHTML = `
-  <iframe
-    src="https://www.twitch.tv/embed/${twitchChannel}/chat?parent=${location.hostname}"
-    frameborder="0"
-    height="100%"
-    width="100%">
-  </iframe>
-`;
+  document.addEventListener('mouseup', () => isDown = false);
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    el.style.left = `${e.clientX + offsetX}px`;
+    el.style.top = `${e.clientY + offsetY}px`;
+  });
+}
+
+document.querySelectorAll('.floating-panel').forEach(panel => {
+  makeDraggable(panel);
+});

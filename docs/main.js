@@ -2,7 +2,7 @@
 
 // Initialisation du lecteur Twitch
 const player = new Twitch.Player("twitch-embed", {
-  channel: "touuclakos",
+  channel: "chaaquey",
   parent: ["lebluxtv.github.io"],
   controls: false // Désactiver overlays natifs (si possible)
 });

@@ -1,22 +1,44 @@
-function makeDraggable(el) {
-  let offsetX = 0, offsetY = 0, isDown = false;
+function makeDraggable(element) {
+  let offsetX, offsetY;
+  let isDragging = false;
 
-  el.addEventListener('mousedown', (e) => {
-    isDown = true;
-    offsetX = el.offsetLeft - e.clientX;
-    offsetY = el.offsetTop - e.clientY;
-    el.style.zIndex = 999; // on top
+  element.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - element.offsetLeft;
+    offsetY = e.clientY - element.offsetTop;
+    element.style.zIndex = 1000;
   });
 
-  document.addEventListener('mouseup', () => isDown = false);
-
   document.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    el.style.left = `${e.clientX + offsetX}px`;
-    el.style.top = `${e.clientY + offsetY}px`;
+    if (!isDragging) return;
+    const x = e.clientX - offsetX;
+    const y = e.clientY - offsetY;
+
+    // Contraintes pour rester visible
+    const maxX = window.innerWidth - element.offsetWidth;
+    const maxY = window.innerHeight - element.offsetHeight;
+
+    element.style.left = Math.max(0, Math.min(x, maxX)) + 'px';
+    element.style.top = Math.max(0, Math.min(y, maxY)) + 'px';
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+
+  // Ajuste si la fenêtre est redimensionnée
+  window.addEventListener('resize', () => {
+    const maxX = window.innerWidth - element.offsetWidth;
+    const maxY = window.innerHeight - element.offsetHeight;
+    const left = parseInt(element.style.left || 0, 10);
+    const top = parseInt(element.style.top || 0, 10);
+    element.style.left = Math.min(left, maxX) + 'px';
+    element.style.top = Math.min(top, maxY) + 'px';
   });
 }
 
-document.querySelectorAll('.floating-panel').forEach(panel => {
-  makeDraggable(panel);
+// Applique à tous les panneaux
+['chat-panel', 'sub-panel', 'follower-panel'].forEach(id => {
+  const el = document.getElementById(id);
+  makeDraggable(el);
 });

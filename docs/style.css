@@ -1,3 +1,4 @@
+/* Réinitialisations de base */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -5,21 +6,32 @@ body {
   color: white;
 }
 
-/* Conteneur centré pour le lecteur avec largeur maximale */
+/* Conteneur responsive pour le lecteur (16:9) */
 #player-container {
   width: 100%;
-  max-width: 1920px;
-  margin: 0 auto;
+  max-width: 1920px; 
+  margin: 0 auto;       /* centre le conteneur */
+  position: relative;   /* pour pouvoir placer #twitch-embed en absolu */
 }
 
-/* Le lecteur occupe toute la largeur et garde un ratio de 16:9 */
+/* Pseudo-élément qui réserve la hauteur (56.25% correspond au ratio 16/9) */
+#player-container::before {
+  content: "";
+  display: block;
+  padding-top: 56.25%; /* 16:9 */
+}
+
+/* Le lecteur occupe tout l'espace du conteneur avec le ratio réservé par le pseudo-élément */
 #twitch-embed {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  height: 100%;
   background-color: black;
 }
 
-/* Zones de redock aux coins de la fenêtre */
+/* Zones de redock */
 .redock-zone {
   position: absolute;
   width: 50px;
@@ -32,7 +44,24 @@ body {
 #dock-bl { bottom: 0; left: 0; }
 #dock-br { bottom: 0; right: 0; }
 
-/* Style des panneaux flottants */
+/* Module de contrôle du volume */
+.floating-module {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(31, 31, 31, 0.9);
+  padding: 10px;
+  border-radius: 8px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+}
+
+.floating-module label {
+  margin-right: 8px;
+}
+
+/* Panneaux flottants (Chat, Actions, etc.) */
 .floating-panel {
   position: absolute;
   width: 250px;
@@ -74,35 +103,7 @@ body {
   font-size: 14px;
 }
 
-/* Positions initiales (les positions peuvent être réajustées dynamiquement par JS) */
-#chat-panel {
-  top: 10px;
-  left: 10px;
-}
-
-#sub-panel {
-  top: 10px;
-  right: 10px;
-}
-
-#follower-panel {
-  bottom: 10px;
-  left: 10px;
-}
-
-/* Module de contrôle du volume */
-.floating-module {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: rgba(31, 31, 31, 0.9);
-  padding: 10px;
-  border-radius: 8px;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-}
-
-.floating-module label {
-  margin-right: 8px;
-}
+/* Positions initiales */
+#chat-panel { top: 10px; left: 10px; }
+#sub-panel { top: 10px; right: 10px; }
+#follower-panel { bottom: 10px; left: 10px; }

@@ -1,3 +1,26 @@
+/* 
+  main.js
+  - Initialise le lecteur Twitch via l'API et tente de désactiver les contrôles natifs.
+  - Met en place le module de contrôle de volume.
+  - Gère également le drag & drop et les fonctionnalités de collapse pour les panneaux.
+*/
+
+// Initialisation du lecteur Twitch
+const player = new Twitch.Player("twitch-embed", {
+  channel: "touuclakos",
+  parent: ["lebluxtv.github.io"],
+  // Tentative de désactivation des overlays natifs (ce paramètre n'est pas garanti par Twitch)
+  controls: false
+});
+
+// Configuration du module de contrôle de volume
+const volumeSlider = document.getElementById("volume-slider");
+volumeSlider.addEventListener("input", (e) => {
+  const volume = parseFloat(e.target.value);
+  player.setVolume(volume);
+});
+
+// Gestion des panneaux flottants (drag & drop et collapse)
 const panels = document.querySelectorAll('.floating-panel');
 
 panels.forEach(panel => {
@@ -26,7 +49,11 @@ panels.forEach(panel => {
   });
 
   document.addEventListener('mouseup', () => {
-    isDragging = false;
+    if (isDragging) {
+      isDragging = false;
+      // Optionnel : Redocker le panneau s'il est proche d'un coin
+      dockToCorner(panel);
+    }
   });
 
   collapseBtn.addEventListener('click', () => {
@@ -36,7 +63,7 @@ panels.forEach(panel => {
   });
 });
 
-// Auto-redock si proche des coins
+// Fonction de redock : aligne le panneau s'il est proche d'un coin
 function dockToCorner(panel) {
   const rect = panel.getBoundingClientRect();
   const distance = 50;
@@ -60,10 +87,10 @@ function dockToCorner(panel) {
   }
 }
 
+// Ajustement des positions des panneaux lors du redimensionnement de la fenêtre
 window.addEventListener('resize', () => {
   panels.forEach(p => {
     const rect = p.getBoundingClientRect();
-    // reposition if out of bounds
     if (rect.right > window.innerWidth) {
       p.style.left = `${window.innerWidth - rect.width - 10}px`;
     }

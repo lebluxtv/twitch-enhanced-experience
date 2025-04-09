@@ -1,27 +1,27 @@
-/* Réinitialisations de base */
-body {
+/* Réinitialisation des marges et du fond */
+html, body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  padding: 0;
   background-color: #121212;
   color: white;
+  font-family: Arial, sans-serif;
 }
 
-/* Conteneur responsive pour le lecteur (16:9) */
+/* Conteneur pour le lecteur : 100% de largeur, max 1920px, centré, avec ratio 16:9 */
 #player-container {
   width: 100%;
-  max-width: 1920px; 
-  margin: 0 auto;       /* centre le conteneur */
-  position: relative;   /* pour pouvoir placer #twitch-embed en absolu */
+  max-width: 1920px;
+  margin: 0 auto;         /* centre le conteneur horizontalement */
+  position: relative;     /* nécessaire pour positionner le contenu en absolu */
 }
 
-/* Pseudo-élément qui réserve la hauteur (56.25% correspond au ratio 16/9) */
 #player-container::before {
   content: "";
   display: block;
-  padding-top: 56.25%; /* 16:9 */
+  padding-top: 56.25%;    /* 16:9 correspond à (9/16)*100 = 56.25% */
 }
 
-/* Le lecteur occupe tout l'espace du conteneur avec le ratio réservé par le pseudo-élément */
+/* Le lecteur Twitch occupe toute la zone réservée */
 #twitch-embed {
   position: absolute;
   top: 0;
@@ -31,37 +31,7 @@ body {
   background-color: black;
 }
 
-/* Zones de redock */
-.redock-zone {
-  position: absolute;
-  width: 50px;
-  height: 50px;
-  z-index: 100;
-}
-
-#dock-tl { top: 0; left: 0; }
-#dock-tr { top: 0; right: 0; }
-#dock-bl { bottom: 0; left: 0; }
-#dock-br { bottom: 0; right: 0; }
-
-/* Module de contrôle du volume */
-.floating-module {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: rgba(31, 31, 31, 0.9);
-  padding: 10px;
-  border-radius: 8px;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-}
-
-.floating-module label {
-  margin-right: 8px;
-}
-
-/* Panneaux flottants (Chat, Actions, etc.) */
+/* Panneaux flottants (Chat et Actions) */
 .floating-panel {
   position: absolute;
   width: 250px;
@@ -69,7 +39,6 @@ body {
   background-color: #1f1f1f;
   border: 1px solid #444;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   padding: 8px;
   z-index: 1000;
   resize: both;
@@ -77,6 +46,7 @@ body {
   user-select: none;
 }
 
+/* En-tête des panneaux pour le drag & drop et le collapse */
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -103,7 +73,24 @@ body {
   font-size: 14px;
 }
 
-/* Positions initiales */
-#chat-panel { top: 10px; left: 10px; }
-#sub-panel { top: 10px; right: 10px; }
+/* Positions initiales des panneaux flottants */
+#chat-panel { top: calc(100% + 10px); left: 10px; }
+#sub-panel { top: calc(100% + 10px); right: 10px; }
 #follower-panel { bottom: 10px; left: 10px; }
+
+/* Module de contrôle du volume flottant */
+.floating-module {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: rgba(31, 31, 31, 0.9);
+  padding: 10px;
+  border-radius: 8px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+}
+
+.floating-module label {
+  margin-right: 8px;
+}

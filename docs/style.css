@@ -3,21 +3,23 @@ body {
   font-family: Arial, sans-serif;
   background-color: #121212;
   color: white;
-  overflow: hidden;
-  height: 100vh;
 }
 
-/* Conteneur du lecteur Twitch en haut de page, adaptable en 16:9 */
-#twitch-embed {
-  position: absolute;
-  top: 0;
-  left: 0;
+/* Conteneur centré pour le lecteur avec largeur maximale */
+#player-container {
   width: 100%;
-  height: calc(100vw * 9 / 16);
-  z-index: 0;
+  max-width: 1920px;
+  margin: 0 auto;
 }
 
-/* Zones de redock aux coins de l'écran */
+/* Le lecteur occupe toute la largeur et garde un ratio de 16:9 */
+#twitch-embed {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: black;
+}
+
+/* Zones de redock aux coins de la fenêtre */
 .redock-zone {
   position: absolute;
   width: 50px;
@@ -30,7 +32,7 @@ body {
 #dock-bl { bottom: 0; left: 0; }
 #dock-br { bottom: 0; right: 0; }
 
-/* Panneaux flottants (Chat, Actions, etc.) */
+/* Style des panneaux flottants */
 .floating-panel {
   position: absolute;
   width: 250px;
@@ -72,12 +74,23 @@ body {
   font-size: 14px;
 }
 
-/* Position initiale des panneaux */
-#chat-panel { top: calc(100vw * 9 / 16) + 10px; left: 10px; }
-#sub-panel { top: calc(100vw * 9 / 16) + 10px; right: 10px; }
-#follower-panel { bottom: 10px; left: 10px; }
+/* Positions initiales (les positions peuvent être réajustées dynamiquement par JS) */
+#chat-panel {
+  top: 10px;
+  left: 10px;
+}
 
-/* Module de contrôle de volume flottant */
+#sub-panel {
+  top: 10px;
+  right: 10px;
+}
+
+#follower-panel {
+  bottom: 10px;
+  left: 10px;
+}
+
+/* Module de contrôle du volume */
 .floating-module {
   position: fixed;
   bottom: 20px;

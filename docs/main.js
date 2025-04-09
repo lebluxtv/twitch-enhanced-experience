@@ -9,7 +9,7 @@
 const player = new Twitch.Player("twitch-embed", {
   channel: "touuclakos",
   parent: ["lebluxtv.github.io"],
-  // Tentative de désactivation des overlays natifs (ce paramètre n'est pas garanti par Twitch)
+  // Tentative de désactivation des overlays natifs
   controls: false
 });
 

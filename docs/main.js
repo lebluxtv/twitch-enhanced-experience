@@ -1,26 +1,21 @@
-/* 
-  main.js
-  - Initialise le lecteur Twitch via l'API et tente de désactiver les contrôles natifs.
-  - Met en place le module de contrôle de volume.
-  - Gère également le drag & drop et les fonctionnalités de collapse pour les panneaux.
-*/
+// main.js
 
-// Initialisation du lecteur Twitch
+// Initialisation du lecteur Twitch via l'API
 const player = new Twitch.Player("twitch-embed", {
   channel: "touuclakos",
   parent: ["lebluxtv.github.io"],
-  // Tentative de désactivation des overlays natifs
+  // On désactive les overlays natifs autant que possible
   controls: false
 });
 
-// Configuration du module de contrôle de volume
+// Module de contrôle du volume
 const volumeSlider = document.getElementById("volume-slider");
 volumeSlider.addEventListener("input", (e) => {
   const volume = parseFloat(e.target.value);
   player.setVolume(volume);
 });
 
-// Gestion des panneaux flottants (drag & drop et collapse)
+// Gestion du drag & drop et du collapse pour les panneaux flottants
 const panels = document.querySelectorAll('.floating-panel');
 
 panels.forEach(panel => {
@@ -51,7 +46,7 @@ panels.forEach(panel => {
   document.addEventListener('mouseup', () => {
     if (isDragging) {
       isDragging = false;
-      // Optionnel : Redocker le panneau s'il est proche d'un coin
+      // Optionnel : redocker le panneau s'il est proche d'un coin
       dockToCorner(panel);
     }
   });
@@ -87,15 +82,19 @@ function dockToCorner(panel) {
   }
 }
 
-// Ajustement des positions des panneaux lors du redimensionnement de la fenêtre
-window.addEventListener('resize', () => {
-  panels.forEach(p => {
-    const rect = p.getBoundingClientRect();
-    if (rect.right > window.innerWidth) {
-      p.style.left = `${window.innerWidth - rect.width - 10}px`;
-    }
-    if (rect.bottom > window.innerHeight) {
-      p.style.top = `${window.innerHeight - rect.height - 10}px`;
-    }
-  });
-});
+// Repositionnement des panneaux en fonction de la hauteur du lecteur
+function repositionPanels() {
+  const playerContainer = document.getElementById("player-container");
+  const playerHeight = playerContainer.offsetHeight;
+  
+  // Place les panneaux juste en dessous du lecteur (avec une marge de 10px)
+  const chatPanel = document.getElementById("chat-panel");
+  const subPanel = document.getElementById("sub-panel");
+  
+  chatPanel.style.top = (playerHeight + 10) + "px";
+  subPanel.style.top = (playerHeight + 10) + "px";
+}
+
+// Appeler le repositionnement lors du chargement et redimensionnement
+window.addEventListener('load', repositionPanels);
+window.addEventListener('resize', repositionPanels);

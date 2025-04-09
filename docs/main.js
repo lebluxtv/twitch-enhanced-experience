@@ -1,6 +1,6 @@
 // Initialisation du lecteur Twitch via l'API
 const player = new Twitch.Player("twitch-embed", {
-  channel: "chaaquey",            // Remplace par le nom de ta chaîne
+  channel: "dropeart",            // Remplace par le nom de ta chaîne
   parent: ["lebluxtv.github.io"],   // Le domaine autorisé
   controls: false,                   // Désactivation des overlays natifs autant que possible
  width: "100%",

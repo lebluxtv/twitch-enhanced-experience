@@ -63,6 +63,10 @@ html, body {
   border-radius: 8px 8px 0 0;
   cursor: move;
 }
+.header-buttons button {
+  margin-left: 4px;
+  opacity: 1; /* Pour s'assurer qu'ils soient bien visibles */
+}
 
 /* Bouton collapse/expand */
 .collapse-btn {

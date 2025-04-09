@@ -4,12 +4,14 @@
     <meta charset="UTF-8" />
     <title>Twitch Enhanced Experience</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/src/css/style.css" />
+    <!-- ✅ chemins relatifs corrigés -->
+    <link rel="stylesheet" href="../src/css/style.css" />
   </head>
   <body>
     <div id="stream-container">
+      <!-- ✅ parent mis à github.io -->
       <iframe
-        src="https://player.twitch.tv/?channel=lebluxtv&parent=localhost"
+        src="https://player.twitch.tv/?channel=lebluxtv&parent=lebluxtv.github.io"
         height="100%"
         width="100%"
         allowfullscreen
@@ -21,6 +23,7 @@
     <div id="sub-panel" class="floating-panel">Subscriber Actions</div>
     <div id="follower-panel" class="floating-panel">Follower Actions</div>
 
-    <script type="module" src="/src/js/main.js"></script>
+    <!-- ✅ chemin relatif corrigé -->
+    <script type="module" src="../src/js/main.js"></script>
   </body>
 </html>

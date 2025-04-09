@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <!-- Conteneur responsive pour le lecteur (ratio 16:9) -->
+    <!-- Conteneur responsive pour le lecteur Twitch -->
     <div id="player-container">
       <div id="twitch-embed"></div>
     </div>
@@ -18,7 +18,9 @@
         <span>Chat</span>
         <button class="collapse-btn">−</button>
       </div>
-      <div class="panel-content">Chat loading...</div>
+      <div class="panel-content">
+        Chat loading...
+      </div>
     </div>
 
     <div id="sub-panel" class="floating-panel">
@@ -26,7 +28,9 @@
         <span>Subscriber Actions</span>
         <button class="collapse-btn">−</button>
       </div>
-      <div class="panel-content">Actions réservées aux subs...</div>
+      <div class="panel-content">
+        Actions réservées aux subs...
+      </div>
     </div>
 
     <div id="follower-panel" class="floating-panel">
@@ -34,16 +38,23 @@
         <span>Follower Actions</span>
         <button class="collapse-btn">−</button>
       </div>
-      <div class="panel-content">Actions réservées aux followers...</div>
+      <div class="panel-content">
+        Actions réservées aux followers...
+      </div>
     </div>
 
-    <!-- Module de contrôle du volume flottant -->
-    <div id="volume-control" class="floating-module">
-      <label for="volume-slider">Volume</label>
-      <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+    <!-- Module de contrôle du volume rétractable et déplaçable -->
+    <div id="volume-control" class="floating-panel">
+      <div class="panel-header">
+        <span>Volume</span>
+        <button class="collapse-btn">−</button>
+      </div>
+      <div class="panel-content">
+        <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+      </div>
     </div>
 
-    <!-- Chargement du script officiel du player Twitch -->
+    <!-- Chargement du script officiel du lecteur Twitch -->
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
     <!-- Script principal -->
     <script type="module" src="main.js"></script>

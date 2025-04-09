@@ -12,40 +12,7 @@
       <div id="twitch-embed"></div>
     </div>
 
-    <!-- Panneaux flottants -->
-    <div id="chat-panel" class="floating-panel">
-      <div class="panel-header">
-        <span>Chat</span> 
-<div class="header-buttons">
-        <button class="collapse-btn">−</button>
-        <button id="chat-expand-btn">⤢</button>
-      </div>
-      <div class="panel-content">
-        Chat loading...
-      </div>
-    </div>
-
-    <div id="sub-panel" class="floating-panel">
-      <div class="panel-header">
-        <span>Subscriber Actions</span>
-        <button class="collapse-btn">−</button>
-      </div>
-      <div class="panel-content">
-        Actions réservées aux subs...
-      </div>
-    </div>
-
-    <div id="follower-panel" class="floating-panel">
-      <div class="panel-header">
-        <span>Follower Actions</span>
-        <button class="collapse-btn">−</button>
-      </div>
-      <div class="panel-content">
-        Actions réservées aux followers...
-      </div>
-    </div>
-
-    <!-- Module de contrôle du volume rétractable et déplaçable -->
+    <!-- Panneau Volume -->
     <div id="volume-control" class="floating-panel">
       <div class="panel-header">
         <span>Volume</span>
@@ -56,7 +23,43 @@
       </div>
     </div>
 
-    <!-- Chargement du script officiel du lecteur Twitch -->
+    <!-- Panneau Follower Actions -->
+    <div id="follower-panel" class="floating-panel">
+      <div class="panel-header">
+        <span>Follower Actions</span>
+        <button class="collapse-btn">−</button>
+      </div>
+      <div class="panel-content">
+        Actions réservées aux followers...
+      </div>
+    </div>
+
+    <!-- Panneau Subscriber Actions -->
+    <div id="sub-panel" class="floating-panel">
+      <div class="panel-header">
+        <span>Subscriber Actions</span>
+        <button class="collapse-btn">−</button>
+      </div>
+      <div class="panel-content">
+        Actions réservées aux subs...
+      </div>
+    </div>
+
+    <!-- Panneau Chat (indépendant) avec bouton d'expansion supplémentaire -->
+    <div id="chat-panel" class="floating-panel">
+      <div class="panel-header">
+        <span>Chat</span>
+        <div class="header-buttons">
+          <button class="collapse-btn">−</button>
+          <button id="chat-expand-btn">⤢</button>
+        </div>
+      </div>
+      <div class="panel-content">
+        Chat loading...
+      </div>
+    </div>
+
+    <!-- Chargement du script officiel du player Twitch -->
     <script src="https://player.twitch.tv/js/embed/v1.js"></script>
     <!-- Script principal -->
     <script type="module" src="main.js"></script>
